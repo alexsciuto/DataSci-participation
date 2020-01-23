@@ -1,3 +1,8 @@
+
+
+
+#### Here are some helpful links
+
 # my participation repository
 https://github.com/alexsciuto/DataSci-participation
 
@@ -6,3 +11,4 @@ https://github.com/alexsciuto
 
 # Class Page
 https://github.com/USF-Psych-DataSci
+
