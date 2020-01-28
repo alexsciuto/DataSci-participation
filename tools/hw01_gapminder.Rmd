@@ -37,7 +37,15 @@ hist(gapminder$lifeExp, freq=FALSE, xlab = "Life expectancy", ylab = "density", 
 
 plot(gapminder$year, gapminder$lifeExp)
 
-x = dplyr::mutate(gapminder,)
+life_expectancy = dplyr::mutate(gapminder, 
+                  lifeExpMedian = median(lifeExp),
+                  lifeExpStatus = ifelse(lifeExpMedian > lifeExp, "high life expectancy", "low life expectancy"))
+
+(vf.sc.accuracy <- ggplot(life_expectancy,
+                           aes(x = lifeExpStatus), 
+                               y = lifeExp)) +
+    theme_classic()+
+   labs(x = "High or low life expectancy", y = "life expectancy")
 
 
 
