@@ -18,9 +18,24 @@ install.packages("tsibble")
 
 Now run this code chunk to load the packages:
 
-```{r load packages, warning = FALSE}
+
+```r
 if(!require(scales)){install.packages("scales")}
+```
+
+```
+## Loading required package: scales
+```
+
+```r
 if(!require(tsibble)){install.packages("tsibble")}
+```
+
+```
+## Loading required package: tsibble
+```
+
+```r
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(gapminder))
 suppressPackageStartupMessages(library(scales))
@@ -30,29 +45,35 @@ knitr::opts_chunk$set(fig.align = "center")
 
 <!---The following chunk allows errors when knitting--->
 
-```{r allow errors, echo = FALSE}
-knitr::opts_chunk$set(error = TRUE)
-```
 
 
 
-```{r}
+
+
+```r
 # Here is a ggplot example
 ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) +
   geom_point(mapping = aes(color=continent),alpha = 0.1) +
   scale_x_log10("GDP per capita", labels = scales::dollar_format()) +
   theme_bw() +
   ylab("Life Expectancy")
+```
 
+<img src="Plotting_files/figure-html/unnamed-chunk-1-1.png" style="display: block; margin: auto;" />
+
+```r
 # This is a bad example, this is overplotting
 ggplot(gapminder, aes(gdpPercap, lifeExp)) +
   geom_point(mapping = aes(color=continent),alpha = 0.1)
 ```
+
+<img src="Plotting_files/figure-html/unnamed-chunk-1-2.png" style="display: block; margin: auto;" />
 ## Exercise 1: Bar Chart Grammar (Together)
 
 Consider the following plot. Don't concern yourself with the code at this point.
 
-```{r, fig.width = 5, fig.height = 2}
+
+```r
 gapminder %>% 
   filter(year == 2007) %>% 
   mutate(continent = fct_infreq(continent)) %>% 
@@ -60,6 +81,8 @@ gapminder %>%
   geom_bar() +
   theme_bw()
 ```
+
+<img src="Plotting_files/figure-html/unnamed-chunk-2-1.png" style="display: block; margin: auto;" />
 
 Fill in the seven grammar components for this plot.
 
@@ -79,15 +102,18 @@ The following is a tsibble (a special type of tibble containing time series data
 
 Execute this code to store the data in `mauna`:
 
-```{r}
+
+```r
 mauna <- tsibble::as_tsibble(co2) %>%
-   dplyr::rename(month = index, conc = value)
+   rename(month = index, conc = value)
 
  ggplot(data=mauna, # data
         aes(x=month, y=conc)) + # aes mapping
   geom_line() + # geometric object
   theme_bw()
 ```
+
+<img src="Plotting_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
 
 ### 2(a)
 
@@ -105,16 +131,37 @@ Produce a line chart showing the concentration over time. Specifically, the plot
 
 Fill in the blanks to obtain the plot:
 
-```{r, fig.width = 5, fig.height = 2}
 
+```r
 (mauna <- tsibble::as_tsibble(co2) %>% 
-   dplyr::rename(month = index, conc = value)) 
+   rename(month = index, conc = value)) 
+```
 
+```
+## # A tsibble: 468 x 2 [1M]
+##       month  conc
+##       <mth> <dbl>
+##  1 1959 Jan  315.
+##  2 1959 Feb  316.
+##  3 1959 Mar  316.
+##  4 1959 Apr  318.
+##  5 1959 May  318.
+##  6 1959 Jun  318 
+##  7 1959 Jul  316.
+##  8 1959 Aug  315.
+##  9 1959 Sep  314.
+## 10 1959 Oct  313.
+## # ... with 458 more rows
+```
+
+```r
  ggplot(mauna, # data
         aes(x=month, y=conc)) + # aes mapping
   geom_line() + # geometric object
   theme_bw()
 ```
+
+<img src="Plotting_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
 ### 2(b)
 
@@ -125,33 +172,40 @@ It turns out that you're allowed to specify the aesthetic mappings in a `geom` l
 
 The following code mistakenly puts the month variable on the y-axis. Fill in the `FILL_THIS_IN` so that you still obtain the same result as above.
 
-```{r, fig.width = 5, fig.height = 2}
+
+```r
 ggplot(mauna, aes(y = month)) +
   geom_line(aes(x = month))
 ```
+
+<img src="Plotting_files/figure-html/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
 
 ### 2(c)
 
 You can store the output of the plot in a variable, too. Store the plot from 2(a) in the variable named `p`, then add a layer to `p` that adds green points to the plot.
 
-```{r, fig.width = 5, fig.height = 2}
-p =  ggplot(mauna, # data
-        aes(x=month, y=conc)) + # aes mapping
-  geom_line() + # geometric object
-  theme_bw()
 
+```r
+p +
+  FILL_THIS_IN(colour = FILL_THIS_IN)
+```
 
-p + 
-  geom_point( colour = 'green')
+```
+## Error in eval(expr, envir, enclos): object 'p' not found
 ```
 
 ### 2(d)
 
 What's wrong with the following code? Fix it.
 
-```{r, fig.width = 5, fig.height = 2}
-ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp)) +
-  geom_point(alpha = 0.1) 
+
+```r
+ggplot(gapminder) +
+  geom_point(x = gdpPercap, y = lifeExp, alpha = 0.1)
+```
+
+```
+## Error in layer(data = data, mapping = mapping, stat = stat, geom = GeomPoint, : object 'gdpPercap' not found
 ```
 
 
@@ -164,9 +218,11 @@ So you're a ggplot2 pro? Then, let's see this plot adapted to polar coordinates.
 
 The plot should look like a spiral, or concentric circles. 
 
-```{r, fig.width = 5, fig.height = 2}
-ggplot(data = mauna, aes(x = month, y = co2)) +
-  geom_line()+
-  coord_polar()
-  
+
+```r
+FILL_THIS_IN
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'FILL_THIS_IN' not found
 ```
