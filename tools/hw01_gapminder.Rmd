@@ -16,9 +16,10 @@ When you click the **Knit** button a document will be generated that includes bo
 ```{r gapminder}
 
 # this installs necessary packages and loads them
-install.packages("gapminder")
-install.packages("tidyverse")
-install.packages("dplyr")
+
+# install.packages("gapminder")
+# install.packages("tidyverse")
+# install.packages("dplyr")
 library(tidyverse)
 library(gapminder)
 library(dplyr)
