@@ -68,10 +68,10 @@ gapminder %>%
 - Separate each continent into sub-panels.
 
 ```{r, fig.width = 5, fig.height = 2}
-ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) +
+ggplot(gapminder, aes(gdpPercap, lifeExp)) +
   geom_point(alpha = 0.2) +
-  facet_wrap(.~continent) +
-  scale_x_log10(labels = comma_format())
+  scale_x_log10(labels = scales::comma_format()) +
+  facet_wrap(~ continent, scales = "free_y")
 ```
 
 ### 3(b) Bubble Plot
@@ -85,10 +85,12 @@ ggplot(gapminder, aes(x = gdpPercap, y = lifeExp)) +
 ```{r, fig.width = 5, fig.height = 2}
 gapminder %>% 
   filter(continent != "Oceania") %>% 
-  ggplot(aes(gdpPercap, lifeExp)) +
-  facet_wrap(~ continent) +
-  geom_point(alpha = 0.2) +
-  scale_x_log10(labels = scales::comma_format())
+  ggplot(aes(gdpPercap, lifeExp, size = pop, fill = continent)) +
+  facet_wrap(~ continent, nrow = 1) +
+  geom_point(alpha = 0.5, shape = 22) +
+  scale_x_log10(labels = scales::comma_format()) +
+  scale_size_area() +
+  scale_fill_discrete(guide = FALSE)
 ```
 
 A list of shapes can be found [at the bottom of the `scale_shape` documentation](https://ggplot2.tidyverse.org/reference/scale_shape.html).
@@ -99,7 +101,7 @@ Instead of alpha transparency, suppose you're wanting to fix the overplotting is
 
 ```{r, fig.width = 5, fig.height = 2}
 ggplot(gapminder) +
-  geom_point(aes(gdpPercap, lifeExp, size = 0.1)) +
+  geom_point(aes(gdpPercap, lifeExp), size = 0.1) +
   scale_x_log10(labels = scales::dollar_format())
 ```
 
@@ -121,7 +123,8 @@ tribble(
   4, 0.4, 0.5
 ) %>% 
   ggplot(aes(x, y)) + 
-  geom_line()
+  geom_path(arrow = arrow()) +
+  geom_text(aes(label = time), nudge_y = 0.1, nudge_x = -0.02)
 ```
 
 ## Exercise 5: Life expectancies in Africa
@@ -136,9 +139,9 @@ There is also the problem of overlapping text in the x-axis labels. How could we
 gapminder %>% 
   filter(continent == "Americas") %>% 
   ggplot(aes(country, lifeExp)) + 
-  geom_point() +
-  geom_boxplot() +
-  scale_x_discrete()
+  geom_boxplot(outlier.alpha = 0) +
+  geom_jitter(alpha = 0.25, height = 0.2) +
+  coord_flip()
 ```
 
 ### 5(b) Ridgeplots
@@ -147,10 +150,15 @@ We're starting with the same plot as above, but instead of the points + boxplot,
 
 ```{r, fig.width = 5, fig.height = 2}
 gapminder %>% 
+	filter(continent == "Americas") %>% 
+	ggplot(aes(lifeExp, country)) + 
+	ggridges::geom_density_ridges() +
+	# ggridges::geom_rug(aes(group = country))
+gapminder %>% 
   filter(continent == "Americas") %>% 
-  ggplot(aes(country, lifeExp)) + 
-  geom_point() +
-  geom_boxplot()
+  mutate(country = fct_reorder(country, lifeExp, median)) %>% # More on this line later
+  ggplot(aes(lifeExp, country)) + 
+  ggridges::geom_density_ridges()
 ```
 
 ## Exercise 6: Bar plot madness
@@ -167,8 +175,9 @@ gapminder %>%
 ```{r, fig.width = 5, fig.height = 2}
 mtcars %>% 
   mutate(transmission = if_else(am == 0, "automatic", "manual")) %>% 
-  ggplot(aes(cyl)) +
-  geom_bar(aes(color = transmission))
+  ggplot(aes(cyl, ..prop..)) +
+  geom_bar(aes(fill = transmission), position = "dodge") +
+  scale_x_continuous(breaks = c(4, 6, 8)) # Or change cyl to factor(cyl)
 ```
 
 ### 6(b) Bar heights already calculated
@@ -184,7 +193,7 @@ Fix the following bar plot so that it shows these counts.
 
 ```{r}
 ggplot(hair, aes(Hair, n)) +
-  geom_bar()
+  geom_col()
 ```
 
 ## Exercise 7: Tiling
@@ -192,6 +201,8 @@ ggplot(hair, aes(Hair, n)) +
 Here's the number of people having a certain hair and eye colour from a sample of 592 people:
 
 ```{r}
+install.packages("HairEyeColor")
+# this package seems to not be compatible with this R
 (hair_eye <- as_tibble(HairEyeColor) %>% 
   count(Hair, Eye, wt = n))
 ```
@@ -200,6 +211,7 @@ Fix the following plot so that it shows a filled-in square for each combination.
 _Hint:_ What's the title of this exercise?
 
 ```{r}
+
 ggplot(hair_eye, aes(Hair, Eye)) +
   geom_point(aes(colour = n))
 ```
