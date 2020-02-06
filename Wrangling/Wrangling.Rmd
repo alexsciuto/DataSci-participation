@@ -211,31 +211,48 @@ Let's get:
 gapminder %>%
   mutate(grossGDP = gdpPercap * pop, gdpBill = round(grossGDP/1000000000), digits = 2)
 
+
+
 gapminder %>%
+  mutate(grossGDP = gdpPercap * pop, gdpBill = ifelse(grossGDP > pop, "good", "bad"))
 
 ```
 
 Notice the backwards compatibility! No need for loops!
 
+
+
 Try the same thing, but with `transmute` (drops all other variables). 
 
 ```{r}
 gapminder %>%
-  transmute(FILL_THIS_IN)
+  transmute(country, gdpBill = (pop * gdpPercap/100000000) %>% round (2))
 ```
 
 The `if_else` function is useful for changing certain elements in a data frame.
 
 Example: Suppose Canada's 1952 life expectancy was mistakenly entered as 68.8 in the data frame, but is actually 70. Fix it using `if_else` and `mutate`. 
 
+replace life expectancy for Banfladesh with 'NA'
+
 ```{r}
 gapminder %>%
-  mutate(FILL_THIS_IN)
+  mutate(lifeExp = if_else(country == "Canada" & year == 1952, 
+                           60, 
+                           lifeExp)) %>% dplyr::filter(country == "Canada")
+
+gapminder %>%
+  mutate(lifeExp = if_else(country != "Bangladesh",
+                           lifeExp, 
+                           NA_real_)) %>% dplyr::filter(country == "Bangladesh")
+
+
 ```
 
 Your turn: Make a new column called `cc` that pastes the country name followed by the continent, separated by a comma. (Hint: use the `paste` function with the `sep=", "` argument).
 
 ```{r}
+
 ```
 
 These functions we've seen are called __vectorized functions__—they are designed 
