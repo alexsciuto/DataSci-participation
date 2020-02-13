@@ -141,9 +141,13 @@ Let's do some practice with grouping (and ungrouping) and summarizing data frame
    (c) Arrange by min life expectancy.
 
 ```{r}
+library(gapminder)
+
 gapminder %>% 
-  group_by(FILL_THIS_IN) %>% 
-  FILL_THIS_IN(min_life = min(lifeExp))
+  group_by(continent, year) %>% 
+  dplyr::summarize(min_life = min(lifeExp)) %>%
+  arrange(min_life) %>%
+  print()
 ```
 
 
@@ -151,18 +155,38 @@ gapminder %>%
 in the `psych::bfi` dataset. Be sure to handle `NA`!
 
 ```{r}
+
+library(psych)
+psych::bfi
+
+
+
 psych::bfi %>%
-  as_tibble() %>% 
-  select(A1:A5) %>% 
+  as_tibble() %>%
+  dplyr::select(A1:A5) %>% 
   rowwise() %>% 
-  mutate(A_mean = mean(c(A1, A2, A3, A4, A5), na.rm = TRUE)) %>% 
+  dplyr::mutate(A_mean = mean(c(A1, A2, A3, A4, A5), na.rm = TRUE)) %>% 
   ungroup()
+
+
+
 ```
 
 Now compute mean scores for Conscientiousness, as well as `sd` and `min` scores 
 for reach person.
 
 ```{r}
+
+psych::bfi %>%
+  as_tibble() %>%
+  dplyr::select(C1:C5) %>% 
+  rowwise() %>% 
+  dplyr::mutate(C_mean = mean(c(C1, C2, C3, C4, C5), na.rm = TRUE),
+                C_sd = sd(c(C1, C2, C3, C4, C5), na.rm = TRUE),
+                C_min = min(c(C1, C2, C3, C4, C5), na.rm = TRUE))
+                %>% 
+  ungroup() %>%
+
 
 ```
 
@@ -207,13 +231,28 @@ psych::bfi %>%
 
 3. Let's use `psych::bfi` and make a new data frame that has
    (1) each participant's educational level (convert it to a categorical variable
-   using `factor*()`) and the mean score for each of the Big Five scales for each 
+   using `factor()`) and the mean score for each of the Big Five scales for each 
    participant. Store this data frame as a new object.
    
 ```{r}
-FILL_THIS_IN <-
-  psych::bfi %>% 
-  FILL_THIS_IN(FILL_THIS_IN)
+unique(psych::bfi)
+
+
+
+psych_bfi <- psych::bfi %>% 
+  as_tibble() %>%
+  dplyr::mutate(education = as.factor(education)) %>%
+  rowwise() %>%
+  dplyr::summarize(A = mean(c(A1, A2, A3, A4, A5), na.rm = TRUE),
+                 C = mean(c(C1, C2, C3, C4, C5), na.rm = TRUE),
+                 N = mean(c(N1, N2, N3, N4, N5), na.rm = TRUE),
+                 O = mean(c(O1, O2, O3, O4, O5), na.rm = TRUE),
+                 E = mean(c(E1, E2, E3, E4, E5), na.rm = TRUE),
+                 education = education) %>% print()
+
+
+
+library(tidyverse)
 ```
 
 4. Use the data from Task 3 to summarize the distributions of Big Five scores 
@@ -221,9 +260,34 @@ FILL_THIS_IN <-
    each score in each group). Also report the sample size within each group.
    
 ```{r}
-FILL_THIS_IN %>% 
-  FILL_THIS_IN(FILL_THIS_IN) %>% 
-  FILL_THIS_IN(FILL_THIS_IN)
+psych_bfi
+
+psych_bfi %>% 
+  group_by(education) %>%
+  dplyr::summarize(C_mean = mean(C),
+                   C_sd = sd(C),
+                   C_min = min(C),
+                   C_max = max(C),
+                   O_mean = mean(O),
+                   O_sd = sd(O),
+                   O_min = min(O),
+                   O_max = max(O),
+                   N_mean = mean(N),
+                   N_sd = sd(N),
+                   N_min = min(N),
+                   N_max = max(N),
+                   E_mean = mean(E),
+                   E_sd = sd(E),
+                   E_min = min(E),
+                   E_max = max(E),
+                   A_mean = mean(A),
+                   A_sd = sd(A),
+                   A_min = min(A),
+                   A_max = max(A))
+
+psych_bfi %>% 
+  group_by(education) %>%
+  summarize_at(.vars = vars(A, C, O, N, E), .funs = funs(mean = mean, sd = sd) )
 ```  
 
 
