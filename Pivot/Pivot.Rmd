@@ -7,10 +7,13 @@ output:
 ---
 
 ```{r, warning = FALSE, message = FALSE}
+
 library(tidyverse)
+
 lotr  <- read_csv("https://raw.githubusercontent.com/jennybc/lotr-tidy/master/data/lotr_tidy.csv")
 guest <- read_csv("https://raw.githubusercontent.com/USF-Psych-DataSci/Classroom/master/data/wedding/attend.csv")
 email <- read_csv("https://raw.githubusercontent.com/USF-Psych-DataSci/Classroom/master/data/wedding/emails.csv")
+
 ```
 
 <!---The following chunk allows errors when knitting--->
@@ -46,10 +49,12 @@ lotr
 3. Re-lengthen the wide LOTR data from Question 2 above.
 
 ```{r}
+
 lotr_wide %>% 
   pivot_longer(cols = c("Elf", "Hobbit", "Man"), 
                names_to  = "Race", 
                values_to = "Words")
+
 ```
 
 
