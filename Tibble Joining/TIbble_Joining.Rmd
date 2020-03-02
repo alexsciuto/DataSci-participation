@@ -172,10 +172,9 @@ planes
 airports
 
 
+
 flights_agg = flights %>% left_join(planes, by = c("tailnum", "year")) %>%
   left_join(weather, by = c("origin", "month", "day", "year"))
-
-
 
 length(unique(planes$tailnum))
 flights
